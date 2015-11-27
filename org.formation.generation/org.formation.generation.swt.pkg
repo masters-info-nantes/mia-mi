@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE PACKAGE SYSTEM "package.dtd">
+<PACKAGE NAME="org.formation.generation.swt" METAMODEL="UI" NUMBER="11"
+>
+	<fileHeader version="5" toolName="Mia-Generation" toolVersion="9.1.0"/>
+	<SCENARIO NAME="shellGeneration" VISIBILITY="public" META_OBJECT="View" CATEGORY="default">
+		<SERVICE_CALL NAME="actions" PACKAGE="System" META_OBJECT="View"/>
+		<GENERATION_STEP TYPE="FileTemplate" PACKAGE="org.formation.generation.swt" META_OBJECT="View" CATEGORY="default" NAME="shellClass" PARAM_COUNT="0"/>
+	</SCENARIO>
+	<SCRIPT NAME="buttonDeclaration" META_OBJECT="Action" CATEGORY="default">
+		<TEXT><![CDATA[
+private Button btn[[name]];
+
+]]></TEXT>
+	</SCRIPT>
+	<SCRIPT NAME="methodDeclaration" META_OBJECT="Action" CATEGORY="default">
+		<TEXT><![CDATA[
+public void [[name]]()
+{
+[[BeginTag]]
+[[EndTag]]
+}
+
+]]></TEXT>
+		<PROPERTY NAME="BeginTag"/>
+		<PROPERTY NAME="EndTag"/>
+	</SCRIPT>
+	<SCRIPT NAME="methodDeclaration$BeginTag" META_OBJECT="Action" CATEGORY="default">
+		<TEXT><![CDATA[
+// Start of user code for [[name]]
+]]></TEXT>
+	</SCRIPT>
+	<SCRIPT NAME="methodDeclaration$EndTag" META_OBJECT="Action" CATEGORY="default">
+		<TEXT><![CDATA[
+// End of user code
+]]></TEXT>
+	</SCRIPT>
+	<SERVICE_MACRO NAME="actionsSaufQuitter" META_OBJECT="View" CATEGORY="default" RETURN_TYPE="View">
+		<TEXT><![CDATA[
+List<Action> result = new ArrayList<Action>();
+for(Action anAction  : current.getActions())
+{
+	if(anAction.getName().equalsIgnoreCase("quitter")){
+		result.add(anAction);
+	}
+}
+return result:
+]]></TEXT>
+	</SERVICE_MACRO>
+	<SCRIPT NAME="buttonImport" META_OBJECT="View" CATEGORY="default">
+		<TEXT><![CDATA[
+import org.eclipse.swt.widgets.Button;
+]]></TEXT>
+		<PROPERTY NAME="Precondition"/>
+	</SCRIPT>
+	<MACRO_CONDITION NAME="buttonImport$Precondition" META_OBJECT="View" CATEGORY="default">
+		<TEXT><![CDATA[
+return !current.getActions().isEmpty();
+]]></TEXT>
+	</MACRO_CONDITION>
+	<TEXT_MACRO NAME="buttonsDecarations2" META_OBJECT="View" CATEGORY="default" RETURN_TYPE_KIND="primitive" RETURN_TYPE_NAME="String">
+		<TEXT><![CDATA[
+String result;
+result = manager.apply(current.getActions(),"buttonDeclaration");
+return result;
+]]></TEXT>
+	</TEXT_MACRO>
+	<TEXT_MACRO NAME="buttonsDeclarations" META_OBJECT="View" CATEGORY="default" RETURN_TYPE_KIND="primitive" RETURN_TYPE_NAME="String">
+		<TEXT><![CDATA[
+//Equivalent dans une MACRO de l'appel[[actions.buttonDeclaration]] dans un template
+String result ="";
+for( Action anAction : current.getActions())
+{
+	result += manager.getString(anAction, "buttonDeclaration");
+}
+return result;
+]]></TEXT>
+	</TEXT_MACRO>
+	<SCRIPT NAME="shellClass" META_OBJECT="View" CATEGORY="default" FILE_ENCODING="UTF-8" VISIBILITY="private">
+		<TEXT><![CDATA[
+package com.mia.formation.generation.ui;
+
+import org.eclipse.swt.widgets.Shell;
+[[buttonImport]]
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+
+public class [[name]] extends Shell{
+[[actions.buttonDeclaration]]
+
+/**
+	 * Create the shell.
+	 * @param display
+	 */
+	public [[name]](Display display) {
+		super(display, SWT.SHELL_TRIM);
+		createContents();
+	}
+
+	/**
+	 * Create contents of the shell.
+	 */
+	protected void createContents() {
+		setText("[[description]]");
+		setSize(450, 300);
+
+	}
+
+[[actions.methodDeclaration]]
+
+
+}
+]]></TEXT>
+		<PROPERTY NAME="Filename"/>
+	</SCRIPT>
+	<SCRIPT NAME="shellClass$Filename" META_OBJECT="View" CATEGORY="default">
+		<TEXT><![CDATA[
+com/mia/formation/generation/ui/[[name]].java
+]]></TEXT>
+	</SCRIPT>
+</PACKAGE>
